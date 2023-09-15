@@ -7,9 +7,9 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 
-var todos = [{id:1, title:'buy the milk'}, {id:2, title:'rent a car'}, {id:3, title:'feed the cat'}
-, {id:4, title:'Revise my notes'} , {id:5, title:'visit the museum'}, {id:6, title:'go to the gym'}
-, {id:7, title:'go on a date'}, {id:8, title:'rent a car'}, {id:9, title:'go to church'}
+var todos = [{id:1, title:'buy the milk', completed: false}, {id:2, title:'rent a car', completed: false}, {id:3, title:'feed the cat',completed: false}
+, {id:4, title:'Revise my notes',completed: false} , {id:5, title:'visit the museum',completed: false}, {id:6, title:'go to the gym',completed: false}
+, {id:7, title:'go on a date',completed: false}, {id:8, title:'rent a car',completed: false}, {id:9, title:'go to church',completed: false}
 ];
 
 app.get("/todos", (req, res) => {
@@ -30,9 +30,10 @@ app.get("/todos/:id", (req, res) => {
 app.post("/todos", (req, res) => {
     const id = todos[todos.length - 1].id + 1;
     const title = req.body.title;
-    const todo = {id, title};
+    const completed = false; // New todos are not completed
+    const todo = { id, title, completed };
     todos.push(todo);
-    res.send(todo)
+    res.send(todo);
 })
 
 app.put("/todos/:id", (req, res) => {
@@ -57,6 +58,18 @@ app.delete("/todos/:id", (req, res) => {
     if (index !== -1) {   
         todos.splice(index, 1);
         res.send({message: "Todo was deleted"});
+    } else {
+        res.status(404).json({ message: 'Todo not found' });
+    }
+})
+
+app.put("/todos/:id/complete", (req, res) => {
+    const id = req.params.id;
+    const todo = todos.find(todo => todo.id == id);
+
+    if (todo) {
+        todo.completed = true;
+        res.send(todo);
     } else {
         res.status(404).json({ message: 'Todo not found' });
     }
