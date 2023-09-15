@@ -44,5 +44,70 @@ describe('Todo API', () => {
         });
     });
   });
+
+
+    describe('POST /todos', () => {
+    it('it should create a new todo', (done) => {
+      const todo = {
+        title: 'Learn TDD',
+      };
+      chai.request(app)
+        .post('/todos')
+        .send(todo)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'title', 'completed');
+          res.body.should.have.property('title').eql(todo.title);
+          done();
+        });
+    });
+});
+
+describe('PUT /todos/:id', () => {
+    it('it should update an existing todo', (done) => {
+      const todoId = 1;
+      const todo = {
+        title: 'Learn TDD in NodeJS',
+      };
+      chai.request(app)
+        .put(`/todos/${todoId}`)
+        .send(todo)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'title');
+          res.body.should.have.property('title').eql(todo.title);
+          done();
+        });
+    });
+  });
+
+    describe('DELETE /todos/:id', () => {
+    it('it should delete an existing todo', (done) => {
+      const todoId = 1;
+      chai.request(app)
+        .delete(`/todos/${todoId}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('message').eql('Todo was deleted');
+          done();
+        });
+    });
+});
+
+describe('PUT /todos/:id/complete', () => {
+    it('it should mark an existing todo as completed', (done) => {
+      const todoId = 2;
+      chai.request(app)
+        .put(`/todos/${todoId}/complete`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('completed').eql(true);
+          done();
+        });
+    });
+  });
+
   
 });
